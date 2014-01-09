@@ -3,7 +3,7 @@ Respify
 
 Respify responsive image library
 
-A simple responsive images library, which parses a image from a set of data attributes trough media queries. It depends upon the matchMedia polyfill for older browsers.
+A simple responsive images library, which parses a image from a set of data attributes through media queries. It depends upon the matchMedia polyfill for older browsers.
 
 ## Example
 ====
