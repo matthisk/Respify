@@ -3,38 +3,41 @@ Respify
 
 Respify responsive image library
 
-A simple responsive images library, which parses a image from a set of data attributes trough media queries. It depends upon the matchMedia polyfill for older browsers.
+A simple responsive images library, which parses a image from a set of child span nodes with data-media and data-src attributes. It uses media queries to select images.
 
 ## Example
 ====
 
 This is an example of how to use Respify
 
-Respify can either be used on an image tag, or any other tag but then the background option should be set to ```true```. You set all the types of images to use on data attributes. Respify parses greedy so once a media query matches it will use the corresponding src and will not continue parsing.
-
+Respify can either be used on an image tag, or any other tag but then the background option should be set to ```true```. Respify wil pop from the array of span child nodes, this means that the last node in the list will be parsed first. If Respify finds one matching media query it will use the corresponding image and stop the search.
 
 ```
-<img src="" alt="alternate text"
-	 data-respify-large="{(min-width: 1072px)},{large.jpg}"
-     data-respify-medium="{(min-width: 7068px)},{medium.jpg}"
-	 data-respify-small="{},{small.jpg}" />
+<span id="responsive]">
+	 <span data-src="small.jpg"></span>
+     <span data-media="(min-width: 768px)" data-src="medium.jpg"></span>
+     <span data-media="(min-width: 1072px" data-src="large.jpg"></span>
+</span>
+	 
 ```
 
 Set up the Javascript like this:
 
 ```
-$('img').respify();
+$('#responsive').respify();
 ```
 
-Using the options object supplied to Respify you can change the match pattern for the data attribute. For example setting dataPattern to: ```/^media=\{(.*)\},src=\{(.*)\}$/``` will require to set some extra symantics on the data attribute: ```data-respify-large="media={(min-width: 1072px),src={large.jpg}"```
+Respify is a spin off from the picture tag specification, the major difference is that it can set background image of the parent tag. Using child ```span``` tags you can supply different size images. Set the data-media tag to specify a media query and use the data-src tag to specify a src image.
 
 Pass options to respify as an object:
 
 ```
 $('img').respify({
-	dataPattern : /^media=\{(.*)\},src=\{(.*)\}$/
+	background : true
 });
 ```
+Respify adds an event listener to the resize event and will recalculate the image it has to use.
+
 
 ## Options
 ====
@@ -49,29 +52,4 @@ wether to place the selected image as a background-image css property or as a im
 
 type: boolean, default: ```false```
 
-If set to true the plugin will only return the set of matched images and not actually place them on the tags
-
-### selectorPattern
-
-type: regex, default: ```/^data\-respify\-(small|medium|large)$/```
-
-The regular expression to use for matching data attributes. All data attributes matching this regex will be parsed for image data.
-
-### dataPattern
-
-type: regex, default: ```/^\{(.*)\},\{(.*)\}$/```
-
-The pattern for matching media query and image src from the data attributes value.
-
-### dataMediaQuery
-
-type: integer, default: ```1```
-
-The spot on which the dataPattern regex matches the mediaQuery
-
-### dataSrc
-
-type: integer, default: ```2```
-
-The spot on which the dataPattern regex matches the image src
-
+If set to true the plugin will only return the set of matched images and not actually place them on the tags. This can be usefull if you want to supply the selected image to some other piece of code which can not implicitly handle responsive images.
