@@ -15,62 +15,84 @@ var init = function( $ ) {
     $.respify.DEFAULTS = {
         background : false,
         dryRun : false,
-        selectorPattern : /^data\-respify\-(small|medium|large)$/,
-        dataPattern : /^\{(.*)\},\{(.*)\}$/,
-        dataMediaQuery : 1,
-        dataSrc : 2
+    };
+
+    var Picture = function( $el, settings ) {
+        this.$el = $el;
+        this.types = [];
+        this.currentMatch == undefined;
+        this.settings = settings;
+    };
+
+    Picture.prototype.match = function( dry ) {
+        var match = undefined,
+            i = this.types.length - 1;
+
+        while( ! match && i >= 0 ) {
+            var possibility = this.types[ i ];
+
+            if( ! possibility.media || window.matchMedia( possibility.media || '' ).matches ) {
+                match = possibility;
+            }
+
+            i--;
+        }
+
+        if( ! dry && match !== this.currentMatch ) {
+            this.currentMatch = match;
+            this.setMatch();
+        }
+
+        return match.src;
+    };
+
+    Picture.prototype.setMatch = function() {
+        if( ! this.settings.background ) {
+            this.$el.attr( 'src', this.currentMatch.src );
+        } else {
+            this.$el.css( 'background-image', 'url(' + this.currentMatch.src + ')' );
+        }
     };
 
     $.fn.respify = function( options ) {
         var settings = $.extend({}, $.respify.DEFAULTS, options);
         this.dryRunResults = [];
 
-        var setSrc = function( $el, src ) {
-            if( ! settings.background ) {
-                $el.attr( 'src', src );
-            } else {
-                $el.css( 'background-image', 'url(' + src + ')' );
-            }
-        };
-
         $els = $( this );
 
         $els.each(function() {
             var $el = $( this ),
-                attr = $el.get( 0 ).attributes,
-                types = [];
+                picture = new Picture( $el, settings );
 
-            for( var i = 0; i < attr.length; i++ ) {
+            $el.find( 'span' ).each(function() {
+                var $img = $( this );
 
-                if( settings.selectorPattern.test( attr[ i ].name ) && settings.dataPattern.test( attr[ i ].value ) ) {
-                    types.push( attr[ i ].value );
+                if( $img.data( 'src' ) ) {
+                    picture.types.push({
+                        src : $img.data( 'src' ),
+                        media : $img.data( 'media' )
+                    });
+
+                    $img.remove();
                 }
 
+            });
+
+            var match;
+            if( ! settings.dryRun ) {
+                match = picture.match();
+
+                // Recalculate image to set on resize
+                $( window ).resize(function() {
+                    picture.match();
+                });
+            } else {
+                match = picture.match( true );
             }
 
-            for( var i in types ) {
-                var matched = settings.dataPattern.exec( types[ i ] );
-                var mediaQuery = matched[ settings.dataMediaQuery ];
-                var src = matched[ settings.dataSrc ];
-
-                if( matchMedia( mediaQuery ).matches ) {
-                    this.dryRunResults.push( { el : $el, src : src } );
-                    if( ! settings.dryRun ) {
-                        setSrc( $el, src );
-                    }
-                    break;
-                }
-            }
-        }.bind( this ));
-
-        if( this.dryRunResults.length === 1) {
-            return this.dryRunResults[ 0 ].src;
-        } else {
-            return this.dryRunResults;
-        }
+            return match.src;
+        });
     }
-
-
 }
 
 if( typeof window.define === 'function' && window.define.amd ) {
