@@ -5,7 +5,7 @@ window.matchMedia||(window.matchMedia=function(){"use strict";var a=window.style
  * Respify responsive image library
  *
  * Parse a responsive image from a set of data attributes trough media queries, depends upon the matchMedia polyfill for older browsers
- * @version  0.1.0
+ * @version  0.2.1
  * @author  Matthisk Heimensen
  */
 var init = function( $ ) {
@@ -13,8 +13,25 @@ var init = function( $ ) {
     $.respify = {};
 
     $.respify.DEFAULTS = {
+
+        /**
+         * Set the matched image as background on the parent element
+         * @type {Boolean}
+         */
         background : false,
+
+        /**
+         * Dryrun only returns matched pictures but does not actually set them
+         * @type {Boolean}
+         */
         dryRun : false,
+
+        /**
+         * If in browser which does not support media queries the following will return false
+         * Where this should always return true if the browser supports media queries.
+         * @type {Bool}
+         */
+        mediaQueriesEnabled : matchMedia('(min-width: 1px)').matches
     };
 
     var Picture = function( $el, settings ) {
@@ -43,7 +60,12 @@ var init = function( $ ) {
             this.setMatch();
         }
 
-        return match.src;
+        return match;
+    };
+
+    Picture.prototype.setLast = function( ) {
+        this.currentMatch = this.types[ this.types.length - 1 ];
+        this.setMatch();
     };
 
     Picture.prototype.setMatch = function() {
@@ -55,10 +77,9 @@ var init = function( $ ) {
     };
 
     $.fn.respify = function( options ) {
-        var settings = $.extend({}, $.respify.DEFAULTS, options);
-        this.dryRunResults = [];
-
-        $els = $( this );
+        var settings = $.extend({}, $.respify.DEFAULTS, options),
+            $els = $( this ),
+            dryRunMatches = [];
 
         $els.each(function() {
             var $el = $( this ),
@@ -78,20 +99,35 @@ var init = function( $ ) {
 
             });
 
-            var match;
-            if( ! settings.dryRun ) {
-                match = picture.match();
+            // When matchMedia api is supported set correct image
+            if( settings.mediaQueriesEnabled ) {
+                var match;
+                if( ! settings.dryRun ) {
+                    match = picture.match();
 
-                // Recalculate image to set on resize
-                $( window ).resize(function() {
-                    picture.match();
+                    // Recalculate image to set on resize
+                    $( window ).resize(function() {
+                        picture.match();
+                    });
+                } else {
+                    match = picture.match( true );
+                }
+
+                dryRunMatches.push({
+                    node : $el,
+                    match : match
                 });
+            // Else use the last picture from the set
             } else {
-                match = picture.match( true );
+                picture.setLast();
             }
-
-            return match.src;
         });
+
+        if( dryRunMatches.length === 1 ) {
+            return dryRunMatches[ 0 ].match.src
+        } else {
+            return dryRunMatches
+        }
     }
 }
 
