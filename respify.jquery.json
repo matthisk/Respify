@@ -1,0 +1,35 @@
+{
+	"name" : "respify",
+	"title" : "jQuery Respify",
+	"description" : "Respify responsive image library. A simple responsive images library, which parses a image from a set of child span nodes with data-media and data-src attributes. It uses media queries to select images.",
+	"keywords" : [
+	    "responsive-images",
+	    "images",
+	    "responsive",
+	    "jquery",
+	    "picture"
+	],
+	"version" : "0.3.1",
+	"author" : {
+		"name" : "Matthisk Heimensen",
+		"url" : "http://twitter.com/tthisk"
+	},
+	"maintainers": [
+            {
+                    "name": "Matthisk Heimensen",
+                    "url": "https://github.com/matthisk/Respify"
+            }
+    ],
+    "licenses": [
+        {
+                "type": "MIT",
+                "url": "https://github.com/matthisk/Respify/blob/master/LICENSE"
+        }
+    ],
+    "bugs": "https://github.com/matthisk/Respify/issues",
+    "homepage": "https://github.com/matthisk/Respify",
+    "docs": "https://github.com/matthisk/Respify/blob/master/README.md",
+    "dependencies": {
+            "jquery": ">=1.5"
+    }
+}
