@@ -7,7 +7,7 @@ A simple responsive images library, which parses a image from a set of child spa
 
 ## Example
 
-This is an example of how to use Respify
+This is an example of how to use Respify. You can view a working example on the [example page](http://matthisk.github.io/Respify/)
 
 Respify can either be used on an image tag, or any other tag but then the background option should be set to ```true```. Respify wil pop from the array of span child nodes, this means that the last node in the list will be parsed first. If Respify finds one matching media query it will use the corresponding image and stop the search.
 
