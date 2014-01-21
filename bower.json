@@ -1,0 +1,25 @@
+{
+  "name": "Respify",
+  "main": "Respify.js",
+  "version": "0.3.0",
+  "homepage": "https://github.com/matthisk/Respify",
+  "authors": [
+    "Matthisk Heimensen <m@tthisk.nl>"
+  ],
+  "description": "A jQuery responsive image plugin",
+  "keywords": [
+    "responsive-images",
+    "images",
+    "responsive",
+    "jquery",
+    "picture"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

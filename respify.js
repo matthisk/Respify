@@ -1,14 +1,19 @@
-/*! matchMedia() polyfill - Test a CSS media type/query in JS. Authors & copyright (c) 2012: Scott Jehl, Paul Irish, Nicholas Zakas, David Knight. Dual MIT/BSD license */
-window.matchMedia||(window.matchMedia=function(){"use strict";var a=window.styleMedia||window.media;if(!a){var b=document.createElement("style"),c=document.getElementsByTagName("script")[0],d=null;b.type="text/css",b.id="matchmediajs-test",c.parentNode.insertBefore(b,c),d="getComputedStyle"in window&&window.getComputedStyle(b,null)||b.currentStyle,a={matchMedium:function(a){var c="@media "+a+"{ #matchmediajs-test { width: 1px; } }";return b.styleSheet?b.styleSheet.cssText=c:b.textContent=c,"1px"===d.width}}}return function(b){return{matches:a.matchMedium(b||"all"),media:b||"all"}}}());
-
 /**
  * Respify responsive image library
  *
  * Parse a responsive image from a set of data attributes trough media queries, depends upon the matchMedia polyfill for older browsers
- * @version  0.2.1
- * @author  Matthisk Heimensen
+ * @version  0.3.0
+ * @author  Matthisk Heimensen <m@tthisk.nl>
  */
-var init = function( $ ) {
+(function( w, factory ) {
+
+    if( typeof w.define === 'function' && w.define.amd ) {
+        define( [ 'jquery' ], factory );
+    } else {
+        factory( w.jQuery );
+    }
+
+})( window, function( $ ) {
 
     $.respify = {};
 
@@ -27,6 +32,12 @@ var init = function( $ ) {
         dryRun : false,
 
         /**
+         * Callback function to call once a new image is set
+         * @type {Function}
+         */
+        callback : undefined,
+
+        /**
          * If in browser which does not support media queries the following will return false
          * Where this should always return true if the browser supports media queries.
          * @type {Bool}
@@ -37,11 +48,11 @@ var init = function( $ ) {
     var Picture = function( $el, settings ) {
         this.$el = $el;
         this.types = [];
-        this.currentMatch == undefined;
+        this.currentMatch = { src : undefined, media : undefined };
         this.settings = settings;
     };
 
-    Picture.prototype.match = function( dry ) {
+    Picture.prototype.match = function( dry, callback ) {
         var match = undefined,
             i = this.types.length - 1;
 
@@ -55,13 +66,32 @@ var init = function( $ ) {
             i--;
         }
 
-        if( ! dry && match !== this.currentMatch ) {
+        var newMatch = match.src !== this.currentMatch.src;
+        if( newMatch ) {
             this.currentMatch = match;
+        }
+
+        if( ! dry && newMatch ) {
             this.setMatch();
+        }
+
+        if( callback && newMatch ) {
+            callback( match );
         }
 
         return match;
     };
+
+    Picture.prototype.setImage = function( src, alt ) {
+        if( ! this.$img ) {
+            this.$img = $('<img>').appendTo( this.$el );
+        }
+
+        this.$img.attr({
+            src : src,
+            alt : alt
+        });
+    }
 
     Picture.prototype.setLast = function( ) {
         this.currentMatch = this.types[ this.types.length - 1 ];
@@ -70,7 +100,7 @@ var init = function( $ ) {
 
     Picture.prototype.setMatch = function() {
         if( ! this.settings.background ) {
-            this.$el.attr( 'src', this.currentMatch.src );
+            this.setImage( this.currentMatch.src, this.$el.data( 'alt' ) );
         } else {
             this.$el.css( 'background-image', 'url(' + this.currentMatch.src + ')' );
         }
@@ -96,43 +126,29 @@ var init = function( $ ) {
 
                     $img.remove();
                 }
-
             });
 
             // When matchMedia api is supported set correct image
             if( settings.mediaQueriesEnabled ) {
-                var match;
-                if( ! settings.dryRun ) {
-                    match = picture.match();
+                var match = picture.match( settings.dryRun, settings.callback );
 
-                    // Recalculate image to set on resize
-                    $( window ).resize(function() {
-                        picture.match();
-                    });
-                } else {
-                    match = picture.match( true );
-                }
-
-                dryRunMatches.push({
-                    node : $el,
-                    match : match
+                // Recalculate image to set on resize
+                $( window ).resize(function() {
+                    picture.match( settings.dryRun, settings.callback );
                 });
+
+                if( match ) {
+                    dryRunMatches.push({
+                        node : $el,
+                        match : match
+                    });
+                }
             // Else use the last picture from the set
             } else {
                 picture.setLast();
             }
         });
 
-        if( dryRunMatches.length === 1 ) {
-            return dryRunMatches[ 0 ].match.src
-        } else {
-            return dryRunMatches
-        }
+        return dryRunMatches;
     }
-}
-
-if( typeof window.define === 'function' && window.define.amd ) {
-    define( [ 'jquery' ], init );
-} else {
-    init( window.jQuery );
-}
+});

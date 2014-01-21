@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Respify</title>
+	
+	<!-- STYLES -->
+	<link href='http://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'>
+	<style type="text/css">
+		body, html {
+			font-family: 'PT Serif', serif;
+		}
+
+		.grid {
+			margin: 0 auto;
+			max-width: 80em;
+			width: 100%;
+		}
+
+		p.lead {
+			font-size: 14pt;
+			line-height: 1.4em;
+		}
+
+		.responsive-img {
+			background-color: #eee;
+		}
+
+		#background-responsive {
+			position: relative;
+			width: 100%;
+			padding-bottom: 56.25%;
+			background-size: cover;
+			background-position: 50% 50%;
+		}
+	</style>
+
+	<!-- SCRIPTS -->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="ext/matchmedia.js"></script>
+	<script src="respify.js"></script>
+
+	<script>
+		$(function() {
+			$( '#default-responsive' ).respify();
+
+			$( '#background-responsive' ).respify({
+				background : true
+			});
+
+			var resultEl = $('<p>Result...</p>').appendTo( $( '#dry-responsive' ) );
+			var matches = $( '#dry-responsive' ).respify({
+				dryRun : true,
+				callback : function( match ) {
+					resultEl.html( 'Match src: ' + match.src );
+				}
+			});
+
+		});
+	</script>
+
+</head>
+<body>
+	<div class="grid">
+		<h1>Respify responsive images</h1>
+		<p class="lead">
+			Some examples of the jQuery Respify responsive images plugin below, visit the <a href="http://github.com/matthisk/respify">project home</a> for more information.<br>
+			<small>Image used comes from the Andreas Klein responsive images example at the <a href="http://responsiveimages.org/demos/on-a-grid/index.html">responsive image group</a></small>
+		</p>
+
+		<h2>Default responsive image</h2>
+		<p class="lead">
+			A default responsive image, set to an image tag within the picture element
+		</p>
+		<span id="default-responsive" class="responsive-img" data-alt="This is an example of a responsive image">
+			<span data-src="ext/img/yacht_race@mobile.jpg" data-media="(max-width: 30em)"></span>
+			<span data-src="ext/img/yacht_race@wide-mobile.jpg" data-media="(min-width: 30em) and (max-width: 48em)"></span>
+			<span data-src="ext/img/yacht_race@tablet.jpg" data-media="(min-width: 48em) and (max-width: 60em)"></span>
+			<span data-src="ext/img/yacht_race@desktop.jpg" data-media="(min-width: 60em) and (max-width: 80em)"></span>
+			<span data-src="ext/img/yacht_race@hires.jpg" data-media="(min-width: 80em)"></span>
+
+			<noscript><img src="ext/img/yacht_race@hires.jpg" alt="A yacht race"></noscript>
+		</span>
+
+		<h2>Responsive background image</h2>
+		<p class="lead">
+			A responsive image but instead of setting it on an image tag within the picture element it is set as a background image on the picture element
+		</p>
+		<div id="background-responsive" class="responsive-img">
+			<span data-src="ext/img/yacht_race@mobile.jpg" data-media="(max-width: 30em)"></span>
+			<span data-src="ext/img/yacht_race@wide-mobile.jpg" data-media="(min-width: 30em) and (max-width: 48em)"></span>
+			<span data-src="ext/img/yacht_race@tablet.jpg" data-media="(min-width: 48em) and (max-width: 60em)"></span>
+			<span data-src="ext/img/yacht_race@desktop.jpg" data-media="(min-width: 60em) and (max-width: 80em)"></span>
+			<span data-src="ext/img/yacht_race@hires.jpg" data-media="(min-width: 80em)"></span>
+		</div>
+
+		<h2>Dry run responsive image</h2>
+		<p class="lead">
+			A responsive image, but instead of setting the image we dry run and display the resulted image src.
+			This can be usefull if you want to supply a responsive image to some different part of your js code.
+		</p>
+		<div id="dry-responsive" class="responsive-img">
+			<span data-src="ext/img/yacht_race@mobile.jpg" data-media="(max-width: 30em)"></span>
+			<span data-src="ext/img/yacht_race@wide-mobile.jpg" data-media="(min-width: 30em) and (max-width: 48em)"></span>
+			<span data-src="ext/img/yacht_race@tablet.jpg" data-media="(min-width: 48em) and (max-width: 60em)"></span>
+			<span data-src="ext/img/yacht_race@desktop.jpg" data-media="(min-width: 60em) and (max-width: 80em)"></span>
+			<span data-src="ext/img/yacht_race@hires.jpg" data-media="(min-width: 80em)"></span>
+		</div>
+	</div>
+</body>
+</html>
