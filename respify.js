@@ -2,7 +2,7 @@
  * Respify responsive image library
  *
  * Parse a responsive image from a set of data attributes trough media queries, depends upon the matchMedia polyfill for older browsers
- * @version  0.3.1
+ * @version  0.3.2
  * @author  Matthisk Heimensen <m@tthisk.nl>
  */
 (function( w, factory ) {
@@ -100,9 +100,9 @@
 
     Picture.prototype.setMatch = function() {
         if( ! this.settings.background ) {
-            this.setImage( this.currentMatch.src, this.$el.data( 'alt' ) );
+            this.setImage( encodeURI( this.currentMatch.src ), this.$el.data( 'alt' ) );
         } else {
-            this.$el.css( 'background-image', 'url(' + encodeURI(this.currentMatch.src) + ')' );
+            this.$el.css( 'background-image', 'url(' + encodeURI( this.currentMatch.src ) + ')' );
         }
     };
 
