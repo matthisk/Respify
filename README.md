@@ -11,7 +11,7 @@ This is an example of how to use Respify. You can view a working example on the 
 
 Respify can either be used on an image tag, or any other tag but then the background option should be set to ```true```. Respify wil pop from the array of span child nodes, this means that the last node in the list will be parsed first. If Respify finds one matching media query it will use the corresponding image and stop the search.
 
-```
+```html
 <span id="default-responsive" class="responsive-img" data-alt="This is an example of a responsive image">
 	<span data-src="img/yacht_race@mobile.jpg" data-media="(max-width: 30em)"></span>
 	<span data-src="img/yacht_race@wide-mobile.jpg" data-media="(min-width: 30em) and (max-width: 48em)"></span>
@@ -25,7 +25,7 @@ Respify can either be used on an image tag, or any other tag but then the backgr
 
 Set up the Javascript like this:
 
-```
+```javascript
 $('#responsive').respify();
 ```
 
@@ -33,7 +33,7 @@ Respify is a spin off from the picture tag specification, the major difference i
 
 Pass options to respify as an object:
 
-```
+```javascript
 $('img').respify({
 	background : true
 });
